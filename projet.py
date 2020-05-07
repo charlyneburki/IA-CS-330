@@ -16,6 +16,6 @@ for i in range(len(results.donnees_test)):
     print(results.arbre.classifie(results.donnees_test[i]))
 
 #trouver les règles à partir de l'arbre établi. 
-#regles = results.arbre.gen_regles()
-#print(len(regles))
+regles = results.arbre.gen_regles()
+print(len(regles))
 
