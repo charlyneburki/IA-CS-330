@@ -19,10 +19,9 @@ class ResultValues():
         self.stat = StatistiquesID3()
         nb_enfants = len(self.arbre.enfants)
         
-        
         # Task 3
         self.faits_initiaux = None
-        self.regles = None
+        #self.regles = self.arbre.gen_regles()
         # Task 5
         self.arbre_advance = None
 
@@ -59,6 +58,7 @@ class ResultValues():
             predicted.append(rep[-1])
         
         return self.stat.evaluer_similitude(predicted,actual)
+
         
     
     
