@@ -20,6 +20,10 @@ class NoeudDeDecision:
         self.donnees = donnees
         self.enfants = enfants
         self.p_class = p_class
+        
+        #en plus pour partie 3
+        self.regles = []
+        self.chemin = []
 
     def terminal(self):
         """ Vérifie si le noeud courant est terminal. """
@@ -85,3 +89,19 @@ class NoeudDeDecision:
         """
 
         return str(self.repr_arbre(level=0))
+            
+   # def gen_regles(self,level=0):
+         
+    #     print(self.terminal())
+    #     if self.terminal():
+    #         print('hi')
+    #         self.regles.append(self.chemin)
+    #         self.chemin = []
+    #         del self.enfants
+    #     else:
+    #         attribut = self.attribut
+    #         valeur,enfant = self.enfants.items()
+    #         self.chemin.append((attribut, valeur))
+    #         enfant.gen_regles(level+1)
+    #
+    #     return self.regles
