@@ -90,22 +90,30 @@ class NoeudDeDecision:
 
         return str(self.repr_arbre(level=0))
             
-    def gen_regles(self,level=0):
-         
-    #     print(self.terminal())
-       # self.chemin = []
-
-        if self.terminal():
-            self.regles.append(self.chemin)
-            #print(self.regles)
-            #print(len(self.chemin))
-            del self.enfants
-        else:
-            for valeur, enfant in self.enfants.items():
-                #print(self.attribut)
-                attribut = self.attribut
-                self.chemin.append((attribut, valeur))
-                #print(self.chemin)
-                enfant.gen_regles(level+1)
+    def regles_generation(self):
+        regles = []
+        for donnee in self.donnees:
+            #print(donnee)
+            #rep = []
+            regles.append(self.classifie_t(donnee))
             
-        return self.regles
+            regles_finale = sorted(regles, key=len)
+        return regles_finale
+    
+    def classifie_t(self, donnee):
+        """ Classification utilisée pour les regles
+        """
+
+        rep = []
+        if self.terminal():
+            rep.append( ('Alors {}'.format(self.classe().upper())))
+            return rep
+        else:
+            #print(self.attribut)
+            valeur = donnee[1].get(self.attribut)
+            enfant = self.enfants[valeur]
+            rep.append((self.attribut, valeur))
+            child =enfant.classifie_t(donnee)
+            rep = rep +child
+            
+        return rep
