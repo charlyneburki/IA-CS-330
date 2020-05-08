@@ -20,8 +20,10 @@ class ResultValues():
         nb_enfants = len(self.arbre.enfants)
         
         # Task 3
-        self.faits_initiaux = None
-        #self.regles = self.arbre.gen_regles()
+            #chose a random example to see how it works
+        self.faits_initiaux = self.donnees_test[0]
+        self.regles = self.arbre.regles_generation()
+        #self.justification_prediction(self.faits_initiaux)
         # Task 5
         self.arbre_advance = None
 
@@ -58,12 +60,47 @@ class ResultValues():
             predicted.append(rep[-1])
         
         return self.stat.evaluer_similitude(predicted,actual)
-
         
+    def justification_prediction(self, exemple):
+        """ finds the justifications for classifying an example """
+        #sort example keys alphabetically
+        sorted_example =sorted(exemple.items())
+        #sort rules by keys alphabetically
+        sorted_rules = self.sort_rules()
+        
+        
+        justification = []
+        minimum_correct = -1
+            
+        for rule in sorted_rules:
+            correct_cond = 0
+            for cond_rule,cond_ex in zip(rule,sorted_example):
+                if cond_rule == cond_ex:
+                    correct_cond += 1
+                if correct_cond > minimum_correct:
+                    minimum_correct = correct_cond
+                    justification.append(rule)
+        
+        #we choose to return the rule that has the most conditions true
+        try:
+            return_value = max(justification, key=len)
+        except:
+            #otherwise we return the first found
+            return_value = justification[0]
+        return return_value
     
-    
-    
-    
-    
+    def sort_rules(self):
+        """ orders the rules in alphabetical order """
+        sorted_rules = []
+        for regle in self.regles:
+        
+            sorted_rule= sorted(regle, key=lambda r: r[0])
+            
+            result = sorted_rule.pop(0)
+            sorted_rule2= sorted(sorted_rule, key=lambda r: r[0])
+            sorted_rule2.append(result)
+            
+            sorted_rules.append(sorted_rule2)
+        return sorted_rules
     
 
