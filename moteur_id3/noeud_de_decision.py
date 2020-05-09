@@ -97,7 +97,8 @@ class NoeudDeDecision:
             #rep = []
             regles.append(self.classifie_t(donnee))
             
-            regles_finale = sorted(regles, key=len)
+        #regles_finale = sorted(regles, key=len)
+        regles_finale = regles
         return regles_finale
     
     def classifie_t(self, donnee):
