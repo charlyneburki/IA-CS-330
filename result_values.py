@@ -68,9 +68,11 @@ class ResultValues():
         #sort rules by keys alphabetically
         sorted_rules = self.sort_rules()
         
+        #sorted_example = exemple
+        #sorted_rules = self.regles
         
         justification = []
-        minimum_correct = -1
+        minimum_correct = 0
             
         for rule in sorted_rules:
             correct_cond = 0
@@ -82,11 +84,9 @@ class ResultValues():
                     justification.append(rule)
         
         #we choose to return the rule that has the most conditions true
-        try:
-            return_value = max(justification, key=len)
-        except:
-            #otherwise we return the first found
-            return_value = justification[0]
+        return_value = max(justification, key=len)
+        #return_value = justification[0]
+
         return return_value
     
     def sort_rules(self):
@@ -102,5 +102,26 @@ class ResultValues():
             
             sorted_rules.append(sorted_rule2)
         return sorted_rules
+        
+    def justification_prediction2(self, patient):
+        
+        best_rule = None
+        best = 0
+        best_overall = -1
+        
+        for rule in self.regles:
+            best = 0
+            for parameter in patient:
+                for conditions_rule in rule:
+                    if (conditions_rule[0] == parameter) and (conditions_rule[1] == patient[parameter]):
+                        #print(conditions_rule)
+                        #print(parameter)
+                        #print(patient[parameter])
+                        best += 1
+            if best > best_overall:
+                best_overall = best
+                best_rule = rule
+                
+        return best_rule
     
 
