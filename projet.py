@@ -1,11 +1,12 @@
 from result_values import ResultValues
+from donnees.traitement import TraitementDonnees
 
-
+treat = TraitementDonnees()
 
 results = ResultValues()
 
 print('arbre resultant:')
-#print(results.arbre)
+print(results.arbre)
 
 print('pourcentage de classifications correcte:')
 print(results.evaluer_model())
@@ -28,21 +29,21 @@ print('part 3')
 print('Prints the rules decided for each patient: ')
 regles = results.regles
 
+predicted = []
 for i in range(len(results.donnees_test)):
     print('patient ' + str(i+1))
     print('final: ')
     r = results.justification_prediction(results.donnees_test[i])
     print(r)
+    predicted.append(r[-1][-1])
+    
 
 #checks the % correctly classified
-predicted = []
-for donnee in results.donnees_test:
-    rep = results.arbre.classifie(donnee)
-    predicted.append(rep[-1])
-
 actual = []
-for rr in r:
-    actual.append(rr[-1])
+donneess = treat.import_donnees_test('res/test_public_bin.csv')
+for donnee in donneess:
+    rep = results.arbre.classifie(donnee)
+    actual.append(rep[-1])
 
 #problem -- only 40% of correctly classified patients ? 
 print(results.stat.evaluer_similitude(predicted,actual))
