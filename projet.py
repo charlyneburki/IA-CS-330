@@ -1,49 +1,32 @@
 from result_values import ResultValues
-from donnees.traitement import TraitementDonnees
-
-treat = TraitementDonnees()
 
 results = ResultValues()
 
 print('arbre resultant:')
-print(results.arbre)
+#print(results.arbre)
 
 print('pourcentage de classifications correcte:')
 print(results.evaluer_model())
 
 
 print('Exemplification :')
-#for i in range(len(results.donnees_test)):
-#    print(results.arbre.classifie(results.donnees_test[i]))
-
-#trouver les règles à partir de l'arbre établi.
-#regles = results.arbre.gen_regless()
-#rules = results.arbre.chemin
-#print(len(rules))
-#for i in range(len(rules)):
-#    print(rules[i])
-#    print('---')
+for i in range(len(results.donnees_test)):
+   print(results.arbre.classifie(results.donnees_test[i]))
 
 print('****')
 print('part 3')
-print('Prints the rules decided for each patient: ')
+print('Affichage des règles trouvées pour le modèle:')
 regles = results.regles
+print('Il y a ' + str(len(regles)) + ' règles générées.')
+for regle in regles:
+    print (regle)
 
-predicted = []
-for i in range(len(results.donnees_test)):
-    print('patient ' + str(i+1))
-    print('final: ')
-    r = results.justification_prediction(results.donnees_test[i])
-    print(r)
-    predicted.append(r[-1][-1])
     
 
 #checks the % correctly classified
-actual = []
-donneess = treat.import_donnees_test('res/test_public_bin.csv')
-for donnee in donneess:
-    rep = results.arbre.classifie(donnee)
-    actual.append(rep[-1])
+print('pourcentage de classification correcte basé sur les règles:')
+print(results.evaluer_regles())
 
-#problem -- only 40% of correctly classified patients ? 
-print(results.stat.evaluer_similitude(predicted,actual))
+#affiche en bon format la prédiction d'un patient 
+results.rprs_justification(results.donnees_test[33])
+
