@@ -2,26 +2,28 @@ from moteur_id3.noeud_de_decision import NoeudDeDecision
 from moteur_id3.id3 import ID3
 from donnees.traitement import TraitementDonnees
 from donnees.statistiques import StatistiquesID3
+from moteur_diagnostic.diagnostic import Diagnostic
 
 class ResultValues():
 
     def __init__(self):
         
         # load data
-        self.donnees_entrainement, self.donnees_test = self.import_data()
+        donnees_entrainement, donnees_test = self.import_data()
         
         id3 = ID3()
         
         #Task 1
-        self.arbre = id3.construit_arbre(self.donnees_entrainement)
+        self.arbre = id3.construit_arbre(donnees_entrainement)
         
         #Statistics pour task 1 A COMPLETER
+            #pour partie 1 ainsi que pour partie 4 -- i.e trouver combien de patients peuvent etre soignés avec 2 ou moins changements de parametres --> A FAIRE DANS STATISTIQUES
         self.stat = StatistiquesID3()
         nb_enfants = len(self.arbre.enfants)
         
         # Task 3
             #chose a random example to see how it works
-        self.faits_initiaux = self.donnees_test[0] #what is this ?
+        self.faits_initiaux = donnees_test #what is this ?
         self.regles = self.arbre.generer_regles()
         
         # Task 5
@@ -42,7 +44,7 @@ class ResultValues():
         predicted = []
         actual = []
         
-        for donnee in self.donnees_test:
+        for donnee in self.faits_initiaux:
             rep = self.arbre.classifie(donnee)
             actual.append(donnee['target'])
             
@@ -60,7 +62,6 @@ class ResultValues():
         sorted_rule= sorted(rule, key=lambda r: r[0])
         sorted_rule.append(result)
         
-        sorted_rules.append(sorted_rule)
         
         #we sort the example alphabetically as well
         sorted_patient= sorted(patient.items())
@@ -88,15 +89,17 @@ class ResultValues():
         
         #return never used
         #TO DO : FIND BETTER ALTERNATIVE THAN RETURNING FIRST RULE
+        #we try to find the second best rule
         print('no suitable rule found')
         return self.regles[0]
     
     def evaluer_regles(self):
+        """évalue le % de règles classifiées correctement """
         
         predicted = []
         actual = []
         
-        for donnee in self.donnees_test:
+        for donnee in self.faits_initiaux:
             rep = self.arbre.classifie(donnee)
             actual.append(donnee['target'])
             
@@ -107,8 +110,10 @@ class ResultValues():
         return self.stat.evaluer_similitude(predicted,actual)*100
         
     def rprs_justification(self, patient):
+        """ représente les informations d'un patient et son diagnostique. """
         
         justification = self.justification_prediction(patient)
+        print('---')
         print('Patient avec :')
         for key,value in patient.items():
             if key == 'target':
@@ -120,6 +125,99 @@ class ResultValues():
         print('car :')
         for condition in justification:
             print('{} = {},'.format(condition[0],condition[1]), end=' ')
+        print('')
+        print('***')
+        print('suggestion de diagnostic:')
+        suggestion = self.rprs_diagnostic(patient)
+        print(suggestion)
+        print('***')
+        
+    
+    def find_diagnostic(self, patient):
+        """ basé sur les données du patient ainsi que les règles des patients en bonne santé établies à partir de l'arbre, cette fonctionne va trouver la meilleure règle correspondante au conditions du patient. """
+        diagnose = Diagnostic()
+        
+        #find a list of all the healthy rules
+        healthy_rules = diagnose.identifie_parametres_bons(self.regles)
+        diagnostic_rules = []
+        
+        same_sex = False
+        same_age = False
+        for healthy_rule in healthy_rules:
+            # we first test to see if there is a matching rule with same age & sex
+            for conditions in healthy_rule:
+                for condition in conditions:
+                    if (condition[0] == 'age' and condition[1] == patient['age']):
+                        same_age = True
+                    if (condition[0] == 'sex' and condition[1] == patient['sex']):
+                        same_sex = True
+            if same_sex or same_age:
+                diagnostic_rules.append(healthy_rule)
+            same_sex = False
+            same_age = False
+        
+        count_best =0
+        minimal_best = 0
+        final_diagnostic_rule = []
+        
+        #amongst the best candidates, finds the rule that has the least divergence
+        for diagnostic_rule in diagnostic_rules:
+            for conditions in diagnostic_rule:
+                for condition_rule,condition_patient in zip(conditions,patient.items()):
+                    if condition_rule[0]==condition_patient[0] and condition_rule[1] == condition_patient[1]:
+                        count_best += 1
+            if count_best >= minimal_best :
+                minimal_best = count_best
+                final_diagnostic_rule = diagnostic_rule
+
+        return final_diagnostic_rule
+        
+    def suggest_diagnostic(self, patient, diagnostic_rule):
+        """ basé sur une règle de diagnostique passé en paramètre, cette fonctionne retourne les suggestions de changement des paramètres du patient pour qu'il soit en bonne santé """
+        
+        #no diagnostics to do
+        if patient['target'] == '0':
+            return None
+        else:
+            patient = list(patient.items())
+            
+            change_suggestion = []
+            
+            for cond_patient in patient:
+                for conds_rule in diagnostic_rule:
+                    for cond_rule in conds_rule:
+                        if cond_rule[0] == cond_patient[0] and cond_rule[1] != cond_patient[1]:
+                            change_suggestion.append(cond_rule)
+                            
+            #remove suggestions that involve age or sex
+            change_suggestion_final = [change for change in change_suggestion if not (change[0] == 'age' or change[0] == 'sex')]
+            
+            return change_suggestion_final
+    
+    def rprs_diagnostic(self,patient):
+        """ affiche la représentation d'un diagnostique du patient. """
+    
+        diagnostic = self.find_diagnostic(patient)
+        
+        suggestion = self.suggest_diagnostic(patient,diagnostic)
+        
+        if suggestion == None:
+            return 'patient en bonne santé, continuez comme ça !'
+        else:
+            diagnostic_final = ''
+            diagnostic_final += 'Il faut changer: '
+            for conds_suggestion in suggestion:
+                diagnostic_final += ' {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1], end=' ')
+            return diagnostic_final
+        
+        
+                    
+                
+        
+                    
+                    
+            
+            
         
             
         
