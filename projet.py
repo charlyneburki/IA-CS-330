@@ -10,8 +10,8 @@ print(results.evaluer_model())
 
 
 print('Exemplification :')
-for i in range(len(results.donnees_test)):
-   print(results.arbre.classifie(results.donnees_test[i]))
+for i in range(len(results.faits_initiaux)):
+   print(results.arbre.classifie(results.faits_initiaux[i]))
 
 print('****')
 print('part 3')
@@ -27,6 +27,10 @@ for regle in regles:
 print('pourcentage de classification correcte basé sur les règles:')
 print(results.evaluer_regles())
 
-#affiche en bon format la prédiction d'un patient 
-results.rprs_justification(results.donnees_test[33])
+#affiche en bon format la prédiction d'un patient
+results.rprs_justification(results.faits_initiaux[7])
 
+for patient in results.faits_initiaux:
+    results.rprs_justification(patient)
+    
+#TO DO -- restraindre le nombre de changements pour le diagnostique à MAXIMUM 2 changements
