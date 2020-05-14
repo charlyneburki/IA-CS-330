@@ -24,7 +24,7 @@ class ResultValues():
         # Task 3
             #chose a random example to see how it works
         self.faits_initiaux = donnees_test #what is this ?
-        self.regles = self.generer_regles()
+        self.regles = self.arbre.generer_regles()
         
         # Task 5
         self.arbre_advance = None
@@ -38,32 +38,6 @@ class ResultValues():
         donnees_entrainement = importation.import_donnees('res/train_bin.csv')
         donnees_test = importation.import_donnees_test('res/test_public_bin.csv')
         return donnees_entrainement, donnees_test
-    
-    def generer_regles(self, path=[]):
-        """ genere une liste de règles correspondant à l'arbre. """
-        # Check if node is end node
-        if self.arbre.terminal():
-            # return path built until then inside a list
-            listOfOneRule = []
-            path.append(('=>',self.arbre.classe()))
-            listOfOneRule.append(path)
-            return listOfOneRule
-        else:
-            # List of rules geneated in child nodes
-            newRules = []
-            for valeur, enfant in self.arbre.enfants.items():
-                # update path
-                childPath = path.copy()
-                childPath.append((self.arbre.attribut, valeur))
-                # Call method on child with updated path
-                childRules = enfant.generer_regles(childPath)
-                # Concatenate lists
-                newRules = newRules + childRules
-            return newRules
-        
-        # return never used
-        print('Something went wrong')
-        return None
     
     def evaluer_model(self):
         """ evalue le modèle basé sur les données de test. Retourne le pourcentage d'évaluation correcte """
