@@ -24,7 +24,7 @@ class ResultValues():
         # Task 3
             #chose a random example to see how it works
         self.faits_initiaux = donnees_test #what is this ?
-        self.regles = self.arbre.generer_regles()
+        self.regles = self.generer_regles()
         
         # Task 5
         self.arbre_advance = None
@@ -38,6 +38,32 @@ class ResultValues():
         donnees_entrainement = importation.import_donnees('res/train_bin.csv')
         donnees_test = importation.import_donnees_test('res/test_public_bin.csv')
         return donnees_entrainement, donnees_test
+    
+    def generer_regles(self, path=[]):
+        """ genere une liste de règles correspondant à l'arbre. """
+        # Check if node is end node
+        if self.arbre.terminal():
+            # return path built until then inside a list
+            listOfOneRule = []
+            path.append(('=>',self.arbre.classe()))
+            listOfOneRule.append(path)
+            return listOfOneRule
+        else:
+            # List of rules geneated in child nodes
+            newRules = []
+            for valeur, enfant in self.arbre.enfants.items():
+                # update path
+                childPath = path.copy()
+                childPath.append((self.arbre.attribut, valeur))
+                # Call method on child with updated path
+                childRules = enfant.generer_regles(childPath)
+                # Concatenate lists
+                newRules = newRules + childRules
+            return newRules
+        
+        # return never used
+        print('Something went wrong')
+        return None
     
     def evaluer_model(self):
         """ evalue le modèle basé sur les données de test. Retourne le pourcentage d'évaluation correcte """
@@ -141,7 +167,7 @@ class ResultValues():
         healthy_rules = diagnose.identifie_parametres_bons(self.regles)
         diagnostic_rules = []
         
-        same_sex = False
+        """same_sex = False
         same_age = False
         for healthy_rule in healthy_rules:
             # we first test to see if there is a matching rule with same age & sex
@@ -154,13 +180,14 @@ class ResultValues():
             if same_sex or same_age:
                 diagnostic_rules.append(healthy_rule)
             same_sex = False
-            same_age = False
+            same_age = False"""
         
+        diagnostic_rules = healthy_rules
         count_best =0
         minimal_best = 0
         final_diagnostic_rule = []
         
-        #amongst the best candidates, finds the rule that has the least divergence
+        #amongst the best candidates, finds the rule that has the least divergence in the conditions
         for diagnostic_rule in diagnostic_rules:
             for conditions in diagnostic_rule:
                 for condition_rule,condition_patient in zip(conditions,patient.items()):
