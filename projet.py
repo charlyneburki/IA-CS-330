@@ -31,6 +31,14 @@ print(results.evaluer_regles())
 results.rprs_justification(results.faits_initiaux[7])
 
 for patient in results.faits_initiaux:
-    results.rprs_justification(patient)
+    results.diagnose_patient(patient)
     
-#TO DO -- restraindre le nombre de changements pour le diagnostique à MAXIMUM 2 changements
+print('nombre de patients sauvés (avec 2 ou moins changements:)')
+nb_change_1, nb_change_2 = results.get_patients_sauves()
+
+print(nb_change_1)
+print(nb_change_2)
+
+results.get_statistiques()
+
+#TO DO -- stabilité des resultats ? i.e pourquoi la plupart du temps on trouve 36 patients sauvé mais des fois moins ?
