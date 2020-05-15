@@ -9,24 +9,27 @@ class ResultValues():
     def __init__(self):
         
         # load data
-        donnees_entrainement, donnees_test = self.import_data()
+        donnees_entrainement, donnees_test, donnees_entrainement_adv, donnees_test_adv = self.import_data()
         
         id3 = ID3()
         
         #Task 1
         self.arbre = id3.construit_arbre(donnees_entrainement)
         
-        #Statistics pour task 1 A COMPLETER
-            #pour partie 1 ainsi que pour partie 4 -- i.e trouver combien de patients peuvent etre soignés avec 2 ou moins changements de parametres --> A FAIRE DANS STATISTIQUES
+        #Statistics pour task 1 A COMPLETER dans fonction get_statistique
+            #pour partie 1
         self.stat = StatistiquesID3()
         nb_enfants = len(self.arbre.enfants)
         
         # Task 3
-            #chose a random example to see how it works
-        self.faits_initiaux = donnees_test #what is this ?
+        self.faits_initiaux = donnees_test #check with Forum if it's this
         self.regles = self.arbre.generer_regles()
         
+        
+        
         # Task 5
+        
+        
         self.arbre_advance = None
 
     def get_results(self):
@@ -37,7 +40,12 @@ class ResultValues():
         importation = TraitementDonnees()
         donnees_entrainement = importation.import_donnees('res/train_bin.csv')
         donnees_test = importation.import_donnees_test('res/test_public_bin.csv')
-        return donnees_entrainement, donnees_test
+        
+        donnees_entrainement_avance = importation.import_donnees('res/train_continuous.csv')
+        
+        donnees_test_avancee = importation.import_donnees_test('res/test_public_continuous.csv')
+        
+        return donnees_entrainement, donnees_test, donnees_entrainement_avance, donnees_test_avancee
     
     def evaluer_model(self):
         """ evalue le modèle basé sur les données de test. Retourne le pourcentage d'évaluation correcte """
@@ -176,15 +184,14 @@ class ResultValues():
     def suggest_diagnostic(self, patient, diagnostic_rule):
         """ basé sur une règle de diagnostique passé en paramètre, cette fonctionne retourne les suggestions de changement des paramètres du patient pour qu'il soit en bonne santé """
         
+        justification = self.justification_prediction(patient)
+  
         #no diagnostics to do
-        if patient['target'] == '0':
+        if justification[-1][-1] == '0':
             return None
         else:
-            patient = list(patient.items())
-            
             change_suggestion = []
-            
-            for cond_patient in patient:
+            for cond_patient in justification[:-1]:
                 for conds_rule in diagnostic_rule:
                     for cond_rule in conds_rule:
                         if cond_rule[0] == cond_patient[0] and cond_rule[1] != cond_patient[1]:
@@ -197,19 +204,40 @@ class ResultValues():
     
     def rprs_diagnostic(self,patient):
         """ affiche la représentation d'un diagnostique du patient. """
-    
-        diagnostic = self.find_diagnostic(patient)
         
-        suggestion = self.suggest_diagnostic(patient,diagnostic)
+        suggestion = self.diagnose_patient(patient)
         
         if suggestion == None:
             return 'patient en bonne santé, continuez comme ça !'
         else:
+
             diagnostic_final = ''
             diagnostic_final += 'Il faut changer: '
             for conds_suggestion in suggestion:
                 diagnostic_final += ' {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1], end=' ')
             return diagnostic_final
+    
+    def get_patients_sauves(self):
+        """ retourne le nombre de patients nécéssitant 2 ou moins changements de paramètre pour etre en bonne santé"""
+        return self.stat.trouver_nombre_patients_ok()
+        
+    
+    def get_statistiques(self):
+        """ fonction qui retourne tous les statistiques nécessaires """
+        print('nb malades:')
+        print(self.stat.get_nombre_malades(self.faits_initiaux))
+        
+        
+    def diagnose_patient(self,patient):
+        """ gère le diagnostique du patient"""
+    
+        diagnostic = self.find_diagnostic(patient)
+        suggestion = self.suggest_diagnostic(patient,diagnostic)
+        
+        #counts the suggestion
+        self.stat.evaluer_diagnostique(suggestion)
+        
+        return suggestion
         
         
                     
