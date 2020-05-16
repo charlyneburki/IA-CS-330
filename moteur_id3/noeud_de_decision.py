@@ -20,10 +20,6 @@ class NoeudDeDecision:
         self.donnees = donnees
         self.enfants = enfants
         self.p_class = p_class
-        
-        #en plus pour partie 3
-        self.regles = []
-        self.chemin = []
 
     def terminal(self):
         """ Vérifie si le noeud courant est terminal. """
@@ -110,9 +106,10 @@ class NoeudDeDecision:
                 childRules = enfant.generer_regles(childPath)
                 # Concatenate lists
                 newRules = newRules + childRules
+            #sort the new rules alphabetically for stability purpose
+            newRules= sorted(newRules, key=lambda r: r[0])
             return newRules
         
         # return never used
         print('Something went wrong')
         return None
-
