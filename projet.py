@@ -10,8 +10,8 @@ print(results.evaluer_model())
 
 
 print('Exemplification :')
-for i in range(len(results.faits_initiaux)):
-   print(results.arbre.classifie(results.faits_initiaux[i]))
+#for i in range(len(results.faits_initiaux)):
+#   print(results.arbre.classifie(results.faits_initiaux[i]))
 
 print('****')
 print('part 3')
