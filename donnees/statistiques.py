@@ -50,3 +50,27 @@ class StatistiquesID3:
                 nb_malade +=1
         return nb_malade
 
+    def calculer_statistiques(self, regles):
+        """ calcule les statistiques de l'arbre construit pour la partie 1:
+        le nombre d'enfants, la profondeure moyenne et maximale."""
+
+        self.nb_enfants = len(regles)
+
+        self.taille_max = -1
+        self.taille_moyenne = 0
+
+        for regle in regles:
+            taille_regle = len(regle)
+
+            if taille_regle >= self.taille_max:
+                self.taille_max = taille_regle
+
+            self.taille_moyenne += taille_regle
+
+        self.taille_moyenne/= self.nb_enfants
+
+    def get_statistiques(self):
+        """ retourne une string avec les statistiques de l'arbre """
+        print('il y a ' + str(self.nb_enfants) + ' enfants. Larbre a une taille moyenne de '
+         + str(round(self.taille_moyenne,0)) + '. Sa taille maximale est de ' + str(self.taille_max)
+            + '.')
