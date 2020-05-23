@@ -41,9 +41,9 @@ class ID3_ADV:
                 score_classe_predom = score_courant
                 classe_predominante = classe
 
-        #assign the patient an arbitrary label
+        #assign the patient an initial class value to None
         for patient in donnees:
-            patient[1]['etiquette']='0';
+            patient[1]['etiquette']= None;
 
         arbre = self.construit_arbre_recur(donnees, attributs,classe_predominante)
         return arbre
@@ -57,7 +57,7 @@ class ID3_ADV:
             ``[classe, {attribut -> valeur}, ...]``.
             :param attributs: un dictionnaire qui associe chaque\
             étiquette à son domaine de valeurs
-            :param predominant_class la classe prédominante représentée par '0' ou '1'
+            :param predominant_class la classe prédominante représentée par False ou True
             :param level le niveau de recursion dans la génération de l'arbre
             :return: une instance de NoeudDeDecision correspondant à la racine de\
             l'arbre de décision.
@@ -65,6 +65,8 @@ class ID3_ADV:
         def classe_unique(donnees):
             """ Vérifie que toutes les données appartiennent à la même classe. """
 
+            #on modifie la définition d'une classe unique -- elle est unique s'il
+            #reste une unique donnée
             if len(donnees) <=1:
                 return True
             premiere_classe = donnees[0][0]
@@ -74,7 +76,7 @@ class ID3_ADV:
             return True
 
         #profondeur maximale possible -- valeur choisit basée sur les statistiques de la partie 1
-        profondeur_max = 6
+        profondeur_max = 8
 
         if donnees == []:
             return NoeudDeDecision_ADV(None, [str(predominant_class), dict()], str(predominant_class))
@@ -91,9 +93,9 @@ class ID3_ADV:
             for patient in donnees:
                 #classifie les patients selon la nouvelle valeur de séparation en lui attribuant une étiquette
                 if patient[1][attribut_separatoire] < valeur_separatoire:
-                    patient[1]['etiquette']='0'
+                    patient[1]['etiquette']= False
                 else:
-                    patient[1]['etiquette']='1'
+                    patient[1]['etiquette']= True
 
             partitions = self.partitionne(donnees)
 
@@ -113,8 +115,8 @@ class ID3_ADV:
 
             return NoeudDeDecision_ADV((attribut_separatoire, valeur_separatoire), donnees, str(predominant_class), enfants)
 
-    def partitionne(self, donnees, attribut='etiquette', valeurs=['0','1']):
-        """ Partitionne les données selon les valeurs 0 ou 1 de l'étiquette.
+    def partitionne(self, donnees, attribut='etiquette', valeurs=[False,True]):
+        """ Partitionne les données selon les valeurs False ou True de l'étiquette.
 
             :param list donnees: les données à partitioner.
             :param attribut: l'étiquette du split.
@@ -137,12 +139,14 @@ class ID3_ADV:
         entropie_min = 1.0
 
         for attribut in attributs:
+            if attribut == 'etiquette':
+                    continue
             for valeur in attributs[attribut]:
                 for patient in donnees:
                     if float(patient[1][attribut]) < float(valeur) :
-                        patient[1]['etiquette'] = '0'
+                        patient[1]['etiquette'] = False
                     else :
-                        patient[1]['etiquette'] = '1'
+                        patient[1]['etiquette'] = True
 
                 entropie = self.h_C_A(donnees)
 
@@ -225,7 +229,7 @@ class ID3_ADV:
                     for p_ci_aj in p_ci_ajs
                     if p_ci_aj != 0])
 
-    def h_C_A(self, donnees, attribut='etiquette', valeurs = ['0','1']):
+    def h_C_A(self, donnees, attribut='etiquette', valeurs = [False,True]):
         """ H(C|A) - l'entropie de la classe après avoir choisi de partitionner\
             les données suivant les valeurs de l'attribut A.
 

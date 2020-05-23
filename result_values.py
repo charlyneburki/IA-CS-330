@@ -6,8 +6,8 @@ from moteur_diagnostic.diagnostic import Diagnostic
 
 
 #last part
-from moteur_id3.id3_pt5 import ID3_PT5
-from moteur_id3.noeud_de_decision_pt5 import NoeudDeDecision_PT5
+from moteur_id3.id3_adv import ID3_ADV
+from moteur_id3.noeud_de_decision_adv import NoeudDeDecision_ADV
 
 class ResultValues():
 
@@ -21,10 +21,8 @@ class ResultValues():
         #Task 1
         self.arbre = id3.construit_arbre(donnees_entrainement)
 
-        #Statistics pour task 1 A COMPLETER dans fonction get_statistique
-            #pour partie 1
+        #Statistics pour task 1
         self.stat = StatistiquesID3()
-        nb_enfants = len(self.arbre.enfants)
 
         #Task 2
          #evaluate the tree created in part 1:
@@ -36,12 +34,15 @@ class ResultValues():
         self.faits_initiaux = donnees_entrainement
         self.regles = self.generer_regles(self.arbre)
 
+        self.stat.calculer_statistiques(self.regles)
+        
+
         #Task 4
 
         self.diagnostic = Diagnostic(self.regles,self.arbre)
 
         # Task 5
-        id3_adv = ID3_PT5()
+        id3_adv = ID3_ADV()
 
         self.arbre_advance = id3_adv.construit_arbre(self.donnees_entrainement_adv)
 
@@ -187,20 +188,3 @@ class ResultValues():
         """ fonction qui retourne tous les statistiques nécessaires """
         print('nb malades:')
         print(self.stat.get_nombre_malades(self.donnees_test))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

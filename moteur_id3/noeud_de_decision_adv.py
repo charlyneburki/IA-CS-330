@@ -49,10 +49,10 @@ class NoeudDeDecision_ADV:
         else:
             valeur = self.attribut[1]
             if donnee[self.attribut[0]] < valeur:
-                enfant = self.enfants['0']
+                enfant = self.enfants[False]
                 rep += 'Si {} < {}, '.format(self.attribut[0], valeur.upper())
             else:
-                enfant = self.enfants['1']
+                enfant = self.enfants[True]
                 rep += 'Si {} >= {}, '.format(self.attribut[0], valeur.upper())
             try:
                 rep += enfant.classifie(donnee)
@@ -78,7 +78,7 @@ class NoeudDeDecision_ADV:
         else:
             for valeur, enfant in self.enfants.items():
                 rep += '---'*level
-                if valeur == '0':
+                if valeur == False:
                     rep += 'Si {} < {}: \n'.format(self.attribut[0], self.attribut[1].upper())
                 else:
                     rep += 'Si {} >= {}: \n'.format(self.attribut[0], self.attribut[1].upper())
