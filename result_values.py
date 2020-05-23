@@ -34,7 +34,7 @@ class ResultValues():
         
         # Task 3
         self.faits_initiaux = donnees_entrainement
-        self.regles = self.arbre.generer_regles()
+        self.regles = self.generer_regles(self.arbre)
         
         
         
