@@ -22,6 +22,7 @@ class TraitementDonnees:
         return final_donnees
     
     def import_donnees_test(self, filepath):
+        "importe les données test à partir du filepath"
         from csv import DictReader
         # open file in read mode
         with open(filepath, 'r', encoding='UTF-8-sig') as read_obj:

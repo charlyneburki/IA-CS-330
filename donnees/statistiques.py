@@ -13,8 +13,22 @@ class StatistiquesID3:
         """ calcule le % de similarité entre les 2 listes"""
         count_same = sum(1 if x == y else 0 for x,y in zip(actual,predicted))
         count_total = len(actual)
-        
         return count_same/count_total
+        
+    def evaluer_model(self,donnees,arbre):
+        """ evalue le modèle basé sur les données de test et l'arbre fournit en parametre. Retourne le pourcentage d'évaluation correcte """
+        predit = []
+        vrai_val = []
+
+        for donnee in donnees:
+
+            rep = arbre.classifie(donnee[1])
+            vrai_val.append(donnee[0])
+
+            #takes the last character of rep i.e the result of classification
+            predit.append(rep[-1])
+
+        return self.evaluer_similitude(predit,vrai_val)*100
     
     def evaluer_diagnostique(self, diagnostique):
         """ evalue si le diagnostique a 2 ou moins changements de parametres en ajoutant le cas écheant à l'attribut qui comptabilise le bon nombre """
