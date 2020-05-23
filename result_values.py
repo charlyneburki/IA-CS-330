@@ -35,7 +35,7 @@ class ResultValues():
         self.regles = self.generer_regles(self.arbre)
 
         self.stat.calculer_statistiques(self.regles)
-        
+
 
         #Task 4
 
@@ -153,31 +153,28 @@ class ResultValues():
         print('')
         print('***')
         print('suggestion de diagnostic:')
-        print(self.rprs_diagnostic(caract_patient))
+        self.rprs_diagnostic(caract_patient)
         print('***')
 
 
     def rprs_diagnostic(self,patient):
         """ affiche la représentation d'un diagnostique du patient. """
-        justification = self.justification_prediction(patient)
-        suggestions = self.diagnostic.diagnose_patient(patient)#,justification)
 
-        if suggestions == None:
-            #print("je passe ici")
+        diagnostic = self.diagnostic.diagnose_patient(patient)
+
+        if diagnostic == None:
+
             return 'patient en bonne santé, continuez comme ça !'
         else:
-            print("suggestion",suggestions)
-            diagnostic_final = ''
-            diagnostic_final += 'Il faut changer: '
+            print("Diagnostic",diagnostic)
+            print('Ensemble des changement à faire pour que le patient soit guéri:')
             nb_de_suggestion = 0
-            for suggestion in suggestions:
+            for suggestion in diagnostic:
                 for conds_suggestion in suggestion:
-                    diagnostic_final += ' {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1], end=' ')
+                    print('Il faut changer {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1]))
                     nb_de_suggestion +=1
             #counts the suggestion
             self.stat.evaluer_diagnostique(nb_de_suggestion)
-
-        return diagnostic_final
 
     def get_patients_sauves(self):
         """ retourne le nombre de patients nécéssitant 2 ou moins changements de paramètre pour etre en bonne santé"""

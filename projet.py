@@ -27,18 +27,18 @@ for regle in regles:
 print('=-=-=-=-=-=-=-=-=-=-=-=-=')
 print('TACHE #4:')
 
-#for i in range(len(results.donnees_test)):
-    #print(i)
-#   results.rprs_justification(results.donnees_test[i])
-
-results.rprs_justification(results.donnees_test[72])
-
-#print('nombre de patients sauvés (avec 2 ou moins changements):')
-#nb_change_1, nb_change_2 = results.get_patients_sauves()
+for i in range(len(results.donnees_test)):
+    print(i)
+    results.rprs_justification(results.donnees_test[i])
 
 
-#print("nombre de patient sauvé avec 1 changement",nb_change_1)
-#print("nombre de patient sauvé avec 2 changements",nb_change_2)
+
+print('nombre de patients sauvés (avec 2 ou moins changements):')
+nb_change_1, nb_change_2 = results.get_patients_sauves()
+
+
+print("nombre de patient sauvé avec 1 changement",nb_change_1)
+print("nombre de patient sauvé avec 2 changements",nb_change_2)
 
 #results.get_statistiques()
 

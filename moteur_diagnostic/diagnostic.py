@@ -45,6 +45,8 @@ class Diagnostic:
         liste_fixe = self.condition_not_in_patient(patient)
         nb_de_condition_a_etudier = len(liste_fixe)
 
+        Maximum_de_condition_a_etudier = len(patient)
+
         #liste qui contiendra toute les possibilités de diagnostique à considérer, est initié
         #avec la liste de toutes les possibilités avec une seule condition à tester
         liste_courante = liste_fixe
@@ -57,9 +59,11 @@ class Diagnostic:
         first_set_of_iteration = True
         iteration = 1
 
+        Stop=False #deviendra False si l'algorithme à explorer toute les possibilités possible
+
         #algorithme BFS qui explorer toutes les combinaisons de conditions possible,
         #d'abors avec une condition, puis deux, puis trois...
-        while (iteration < 100000):
+        while (not Stop):
 
             if iteration > nb_de_condition_a_etudier:
             #si cette condition est remplie, cela veut dire que l'ensemble des conditions à tester
@@ -129,6 +133,11 @@ class Diagnostic:
                         futur_condition = self.copy_list(condition)
 
             iteration += 1
+
+            if (liste_courante == [] and len(futur_liste[0]) == Maximum_de_condition_a_etudier and len(condition) == Maximum_de_condition_a_etudier):
+            #cette condition est remplis dans le cas ou toutes les possibilités ont été exploré
+                Stop = True
+
 
         print("Pas de combinaison possible pour le diagnostique trouvé en 100'000 combinaison")
         return []
