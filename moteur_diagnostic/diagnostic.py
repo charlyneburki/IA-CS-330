@@ -5,12 +5,9 @@ class Diagnostic:
     def __init__(self,regles,arbre):
         self.arbre = arbre
         self.good_rules = self.identifie_parametres_bons(regles)
-        #self.suggestion = self.diagnose_patient(patient,justification)
 
-
-    def identifie_parametres_problematiques(self, rules):
+    def identifie_parametres_problematiques(self, rules): #fonction pas utilisé à voir si on garde
             sick_rule = []
-
             for rule in rules:
                 if rule[-1][-1]=='1' :
                     sick_rule.append([rule])
@@ -21,6 +18,7 @@ class Diagnostic:
     def identifie_parametres_bons(self,rules):
         good_condition = []
         list_condition =[]
+
         todo_regles = rules
 
         for regle in todo_regles:
@@ -43,6 +41,7 @@ class Diagnostic:
         """ basé sur les données du patient ainsi que les règles des patients en bonne santé établies à partir de l'arbre, cette fonctionne va trouver la meilleure règle correspondante au conditions du patient. """
 
         list_condition = self.good_rules
+        print(list_condition)
         diagnostic_rules = []
         count_best =0
         minimal_best = 0
@@ -57,7 +56,7 @@ class Diagnostic:
                 list_a_etudier.append(a_etudier[0])
 
 
-
+        print(list_a_etudier)
         list_fixe = list_a_etudier
         liste_courante = list_fixe
 
