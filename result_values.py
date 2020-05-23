@@ -4,12 +4,17 @@ from donnees.traitement import TraitementDonnees
 from donnees.statistiques import StatistiquesID3
 from moteur_diagnostic.diagnostic import Diagnostic
 
+
+#last part
+from moteur_id3.id3_pt5 import ID3_PT5
+from moteur_id3.noeud_de_decision_pt5 import NoeudDeDecision_PT5
+
 class ResultValues():
 
     def __init__(self):
         
         # load data
-        donnees_entrainement, donnees_test, donnees_entrainement_adv, donnees_test_adv = self.import_data()
+        donnees_entrainement, self.donnees_test, self.donnees_entrainement_adv, self.donnees_test_adv = self.importer_donnees()
         
         id3 = ID3()
         
@@ -21,45 +26,68 @@ class ResultValues():
         self.stat = StatistiquesID3()
         nb_enfants = len(self.arbre.enfants)
         
+        #Task 2
+         #evaluate the tree created in part 1:
+        self.evaluation_model_1 = self.evaluer_classification( self.donnees_test, self.arbre)
+        
+
+        
         # Task 3
-        self.faits_initiaux = donnees_test #check with Forum if it's this
+        self.faits_initiaux = donnees_entrainement
         self.regles = self.arbre.generer_regles()
         
         
         
         # Task 5
+        id3_adv = ID3_PT5()
         
+        self.arbre_advance = id3_adv.construit_arbre(self.donnees_entrainement_adv)
         
-        self.arbre_advance = None
+        self.evaluation_model_2 = self.evaluer_classification( self.donnees_test_adv, self.arbre_advance)
 
     def get_results(self):
         return [self.arbre, self.faits_initiaux, self.regles, self.arbre_advance]
     
-    def import_data(self):
+    def importer_donnees(self):
         """se charge d'importer les données pour le programme """
         importation = TraitementDonnees()
         donnees_entrainement = importation.import_donnees('res/train_bin.csv')
-        donnees_test = importation.import_donnees_test('res/test_public_bin.csv')
+        donnees_test = importation.import_donnees('res/test_public_bin.csv')
         
         donnees_entrainement_avance = importation.import_donnees('res/train_continuous.csv')
         
-        donnees_test_avancee = importation.import_donnees_test('res/test_public_continuous.csv')
+        donnees_test_avancee = importation.import_donnees('res/test_public_continuous.csv')
         
         return donnees_entrainement, donnees_test, donnees_entrainement_avance, donnees_test_avancee
     
-    def evaluer_model(self):
-        """ evalue le modèle basé sur les données de test. Retourne le pourcentage d'évaluation correcte """
-        predicted = []
-        actual = []
+    def evaluer_classification(self,donnees,arbre):
+        """ evalue le modèle basé sur les données de test et l'arbre fournit en parametre Retourne le pourcentage d'évaluation correcte """
+        return self.stat.evaluer_model(donnees,arbre)
         
-        for donnee in self.faits_initiaux:
-            rep = self.arbre.classifie(donnee)
-            actual.append(donnee['target'])
-            
-            #takes the last character of rep i.e the result of classification
-            predicted.append(rep[-1])
-        
-        return self.stat.evaluer_similitude(predicted,actual)*100
+    def generer_regles(self,arbre, chemin=[]):
+        """ genere une liste de règles correspondant à l'arbre passé en paramètre. """
+        # Check if node is end node
+        if arbre.terminal():
+            # return path built until then inside a list
+            listeUneRegle = []
+            chemin.append(('=>',arbre.classe()))
+            listeUneRegle.append(chemin)
+            return listeUneRegle
+        else:
+            # List of rules geneated in child nodes
+            nouvellesRegles = []
+            for valeur, enfant in arbre.enfants.items():
+                # update path
+                cheminEnfant = chemin.copy()
+                cheminEnfant.append((arbre.attribut, valeur))
+                # Call method on child with updated path
+                reglesEnfant = self.generer_regles(enfant,cheminEnfant)
+                # Concatenate lists
+                nouvellesRegles += reglesEnfant
+                
+            #sort the new rules alphabetically for stability purpose
+            nouvellesRegles= sorted(nouvellesRegles, key=lambda r: r[0])
+            return nouvellesRegles
                 
     def determine_equality(self,patient, regle):
         """ determine si une regle correspond aux conditions du patient en comptabilisant le nombre de conditions vraies de la règle pour le patient"""
@@ -100,35 +128,21 @@ class ResultValues():
         #we try to find the second best rule
         print('no suitable rule found')
         return self.regles[0]
-    
-    def evaluer_regles(self):
-        """évalue le % de règles classifiées correctement """
-        
-        predicted = []
-        actual = []
-        
-        for donnee in self.faits_initiaux:
-            rep = self.arbre.classifie(donnee)
-            actual.append(donnee['target'])
-            
-            #takes the last character of rep i.e the result of classification
-            result = self.justification_prediction(donnee)
-            predicted.append(result[-1][-1])
-        
-        return self.stat.evaluer_similitude(predicted,actual)*100
         
     def rprs_justification(self, patient):
         """ représente les informations d'un patient et son diagnostique. """
         
-        justification = self.justification_prediction(patient)
+        etat_patient = patient[0]
+        caract_patient = patient[1]
+        
+        justification = self.justification_prediction(caract_patient)
         print('---')
         print('Patient avec :')
-        for key,value in patient.items():
-            if key == 'target':
-                print('devrait être {}.'.format(value))
-            else:
+        for key,value in caract_patient.items():
                 print('{} = {},'.format(key,value))
-                
+
+        print('est {}.'.format(etat_patient[0]))
+
         print('est classifié comme {}'.format(justification[-1][-1]))
         print('car :')
         for condition in justification:
@@ -136,10 +150,8 @@ class ResultValues():
         print('')
         print('***')
         print('suggestion de diagnostic:')
-        suggestion = self.rprs_diagnostic(patient)
-        print(suggestion)
+        print(self.rprs_diagnostic(caract_patient))
         print('***')
-        
     
     def find_diagnostic(self, patient):
         """ basé sur les données du patient ainsi que les règles des patients en bonne santé établies à partir de l'arbre, cette fonctionne va trouver la meilleure règle correspondante au conditions du patient. """
@@ -169,11 +181,15 @@ class ResultValues():
         minimal_best = 0
         final_diagnostic_rule = []
         
+        etat_patient = patient[0]
+        caract_patient = patient[1]
+        print(caract_patient)
+        
         #amongst the best candidates, finds the rule that has the least divergence in the conditions
         for diagnostic_rule in diagnostic_rules:
             for conditions in diagnostic_rule:
                 for condition_rule,condition_patient in zip(conditions,patient.items()):
-                    if condition_rule[0]==condition_patient[0] and condition_rule[1] == condition_patient[1]:
+                    if condition_rule[0]==caract_patient and condition_rule[1] == condition_patient[1]:
                         count_best += 1
             if count_best >= minimal_best :
                 minimal_best = count_best
@@ -225,7 +241,7 @@ class ResultValues():
     def get_statistiques(self):
         """ fonction qui retourne tous les statistiques nécessaires """
         print('nb malades:')
-        print(self.stat.get_nombre_malades(self.faits_initiaux))
+        print(self.stat.get_nombre_malades(self.donnees_test))
         
         
     def diagnose_patient(self,patient):
