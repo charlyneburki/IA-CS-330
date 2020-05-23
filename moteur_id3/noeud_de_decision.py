@@ -85,31 +85,3 @@ class NoeudDeDecision:
         """
 
         return str(self.repr_arbre(level=0))
-    
-    def generer_regles(self, path=[]):
-        """ genere une liste de règles correspondant à l'arbre. """
-        # Check if node is end node
-        if self.terminal():
-            # return path built until then inside a list
-            listOfOneRule = []
-            path.append(('=>',self.classe()))
-            listOfOneRule.append(path)
-            return listOfOneRule
-        else:
-            # List of rules geneated in child nodes
-            newRules = []
-            for valeur, enfant in self.enfants.items():
-                # update path
-                childPath = path.copy()
-                childPath.append((self.attribut, valeur))
-                # Call method on child with updated path
-                childRules = enfant.generer_regles(childPath)
-                # Concatenate lists
-                newRules = newRules + childRules
-            #sort the new rules alphabetically for stability purpose
-            newRules= sorted(newRules, key=lambda r: r[0])
-            return newRules
-        
-        # return never used
-        print('Something went wrong')
-        return None
