@@ -37,33 +37,36 @@ class Diagnostic:
     def find_diagnostic(self, patient):
         """ basé sur les données du patient ainsi que les règles des patients en bonne santé établies à partir de l'arbre, cette fonctionne va trouver la meilleure règle correspondante au conditions du patient. """
 
+        #contiendra la liste des conditions à changer
         final_diagnostic_rule = []
-        list_a_etudier=[]
 
-        liste_fixe =[]
-        nb_de_cond_a_etudier = 0
-        for a_etudier in self.good_rules:
-            if a_etudier[0] not in patient:
-                nb_de_cond_a_etudier +=1
-                list_a_etudier.append(a_etudier[0])
 
-        liste_fixe = list_a_etudier
+
+        liste_fixe = self.condition_not_in_patient(patient)
+        nb_de_condition_a_etudier = len(liste_fixe)
+
+        #liste qui contiendra toute les possibilités de diagnostique à considérer, est initié
+        #avec la liste de toutes les possibilités avec une seule condition à tester
         liste_courante = liste_fixe
 
-        #test toute les changements possible qui sont proposé dans la liste diagnostic rules
 
-
-        iteration = 1
+        #liste qui contiendra les futurs conditions à explorer générer par l'algorithme
         futur_liste =[]
-        first_set_of_iteration = True
 
+        #Valable pour les cas où le nombre de condition à considérer en même temps vaut 1
+        first_set_of_iteration = True
+        iteration = 1
+
+        #algorithme BFS qui explorer toutes les combinaisons de conditions possible,
+        #d'abors avec une condition, puis deux, puis trois...
         while (iteration < 100000):
 
-            if iteration > nb_de_cond_a_etudier:
+            if iteration > nb_de_condition_a_etudier:
+            #si cette condition est remplie, cela veut dire que l'ensemble des conditions à tester
+            #fut testé, maintenant la liste des futurs possibilité à considérer devient la liste courante
+            #et la liste futur devient vide
                 liste_courante = futur_liste
-
                 futur_liste = []
-
                 nb_de_cond_a_etudier = len(liste_courante)
 
 
@@ -71,12 +74,13 @@ class Diagnostic:
 
                 first_set_of_iteration = False
 
-                for a_etudier in self.good_rules:
-                    if a_etudier[0] not in patient:
-                        liste_fixe.append(a_etudier[0])
+                liste_fixe = self.condition_not_in_patient(patient)
 
-
+            #tout les changements vont être effectuer sur une copie du patient afin de ne pas changer
+            #le patient de base
             test = patient.copy()
+
+            #contiendra l'ensemble des conditions considérés à cette itération
             condition=[]
 
             if first_set_of_iteration:
@@ -86,40 +90,47 @@ class Diagnostic:
 
             for cond_etudie in condition:
                 for key,values in patient.items():
-                    if key == cond_etudie[0]and values != cond_etudie[1]:
-                        #change les conditions d'un patient "test", travail sur une copy du patient original
+                    #si la condition présente le même attribut mais pas la même valeur
+                    #que la condition présente dans les conditions positive
+                    #on essaye de changer la condition dans le patient test et on regarde
+                    #si le patient test est guérit selon notre arbre
+                    if key == cond_etudie[0] and values != cond_etudie[1]:
                         test[key]=cond_etudie[1]
 
             rep = self.arbre.classifie(test)[-1]
 
             if rep == '0':
+                #le patient est guérit, l'algorithme retourne l'ensemble des conditions
+                #à changer
                 final_diagnostic_rule.append(condition)
-
                 return final_diagnostic_rule
             else:
-
+            #algorithme BFS genère la future liste des conditions à considérer
                 liste_courante.remove(liste_courante[0])
 
-                futur_condition = []
-                for cond in condition:
-                    futur_condition.append(cond)
+                futur_condition = self.copy_list(condition)
 
+                #Soit l'ensemble de conditions étudiés cette itération, on va lui ajouter
+                #une condition parmis la liste de conditions de départ qui ne partage pas
+                #d'attribut en commun avec l'ensemble considéré cette itération
+                #par exemple : si ('cp' = '0') est considéré cette itération
+                #on va le fusionner avec une condition qui ne possède pas l'attribut 'cp'
+                #-->[('cp' = '0')('ca' = 1)]
                 for cond in liste_fixe :
-                    param_cond = []
-                    for condi in condition:
-                        for param in condi:
-                            param_cond.append(param)
+                    ensemble_parametre = []
+                    for ensemble_param in condition:
+                        for param in ensemble_param:
+                            ensemble_parametre.append(param)
 
 
-                    if cond[0] not in param_cond:
+                    if cond[0] not in ensemble_parametre:
                         futur_condition.append(cond)
                         futur_liste.append(futur_condition)
-                        futur_condition = []
-                        for cond in condition:
-                            futur_condition.append(cond)
+                        futur_condition = self.copy_list(condition)
+
             iteration += 1
 
-        print("Pas de combinaison possible pour le diagnostique")
+        print("Pas de combinaison possible pour le diagnostique trouvé en 100'000 combinaison")
         return []
 
 
@@ -132,9 +143,26 @@ class Diagnostic:
             diagnostic = self.find_diagnostic(patient)
         return diagnostic
 
-    # take second element for sort
+    def condition_not_in_patient(self,patient):
+        list_condition_a_etudier=[]
+        for a_etudier in self.good_rules:
+            if a_etudier[0] not in patient:
+                list_condition_a_etudier.append(a_etudier[0])
+        return list_condition_a_etudier
+
+
+
+    #fonction qui sert pour ordonner une liste
     def takeSecond(elem,elem1):
         return elem1[1]
+
+    #effectue une copie d'une liste
+    def copy_list(self,liste):
+        copie = []
+        for element in liste:
+            copie.append(element)
+        return copie
+
 
 
 
