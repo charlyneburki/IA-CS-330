@@ -14,10 +14,6 @@ print('pourcentage de classifications correcte:')
 print(results.evaluer_classification(results.donnees_test,results.arbre))
 
 
-#print('Exemplification :')
-#for i in range(len(results.donnees_test)):
-#   print(results.arbre.classifie(results.donnees_test[i]))
-
 print('=-=-=-=-=-=-=-=-=-=-=-=-=')
 print('TACHE #3:')
 print('Il y a',len(regles),"règles générées par l'algorithme")
@@ -31,24 +27,15 @@ print('TACHE #4:')
 for i in range(len(results.donnees_test)):
    print('***')
    print(i)
+   #c'est de cette manière qu'on affiche un patient ansis que la justification de classification
+   #et le diagnostique trouvé
    results.rprs_justification(results.donnees_test[i])
-#results.rprs_justification(results.donnees_test[60])
-#results.rprs_justification(results.donnees_test[72])
-
 
 print('nombre de patients sauvés (avec 2 ou moins changements):')
 nb_change_1, nb_change_2 = results.stat.get_nb_changement()
 
-
 print("nombre de patient sauvé avec 1 changement",nb_change_1)
 print("nombre de patient sauvé avec 2 changements",nb_change_2)
-
-
-#affiche en bon format la prédiction d'un patient
-#print('exemplification d un patient diagnosé')
-
-
-
 
 print('=-=-=-=-=-=-=-=-=-=-=-=-=')
 print('TACHE #5:')

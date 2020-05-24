@@ -147,12 +147,18 @@ class ResultValues():
 
         print('-'*20)
         print('Suggestion de diagnostic:')
+        #appelle la fonction rprs_diagnostic avec l'ensemble des caractéristiques du patient
+        #NB: ici la condition du patient n'est pas données. Juste les caractéristiques.
+
         self.rprs_diagnostic(caract_patient)
         print('-'*20)
 
 
     def rprs_diagnostic(self,patient):
         """ affiche la représentation d'un diagnostique du patient. """
+        #Appel la fonction diagnose_patient qui se trouve dans la classe diagnostic
+        #diagnostic contiendra l'ensemble des nouvelles conditions à appliquer au patient
+        #pour que ce dernier ne soit plus classifié comme malade
 
         diagnostic = self.diagnostic.diagnose_patient(patient)
 

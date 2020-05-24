@@ -7,8 +7,13 @@ class Diagnostic:
         self.good_rules = self.identifie_parametres_bons(regles)
 
     def identifie_parametres_bons(self,regles):
+        #trouve parmis la liste de toutes les règlès, les règles qui classifie le patient comme pas malade
+        #parmis toute ces règles, regarde les conditions qui apparaissent le plus et construit
+        #un ensemble de conditions ordonné de la plus occurente à la moins
+        #ne prend pas en compte les conditions qui implique le sex ou l'age
+
         good_conditions = []
-        list_condition =[]
+        list_condition_finale =[]
 
         for regle in regles:
             if regle[-1][-1] == '0':
@@ -19,11 +24,11 @@ class Diagnostic:
 
         for g_condition in good_conditions:
             nb_occurence = good_conditions.count(g_condition)
-            if ((g_condition,nb_occurence) not in list_condition) and not(g_condition[0]== 'sex' or g_condition[0]== 'age'):
-                list_condition.append((g_condition,nb_occurence))
+            if ((g_condition,nb_occurence) not in list_condition_condition) and not(g_condition[0]== 'sex' or g_condition[0]== 'age'):
+                list_condition_finale.append((g_condition,nb_occurence))
 
-        self.list_condition = list_condition.sort(key=self.takeSecond,reverse = True)
-        return list_condition
+        self.list_condition_finale = list_condition_finale.sort(key=self.takeSecond,reverse = True)
+        return list_condition_finale
 
     def find_diagnostic(self, patient):
         """ basé sur les données du patient ainsi que les règles des patients en bonne santé établies à partir de l'arbre, cette fonctionne va trouver la meilleure règle correspondante au conditions du patient. """
@@ -136,6 +141,8 @@ class Diagnostic:
         return diagnostic
 
     def condition_not_in_patient(self,patient):
+        #pour un patient donné, trouve les conditions qu'il possède qui ne sont pas présente
+        #dans la liste de conditions générée dans identifie_parametres_bons
         list_condition_a_etudier=[]
         for a_etudier in self.good_rules:
             if a_etudier[0] not in patient:
