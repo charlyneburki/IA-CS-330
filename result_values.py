@@ -27,7 +27,7 @@ class ResultValues():
 
         # Task 3
 
-        self.faits_initiaux = donnees_entrainement
+        self.faits_initiaux = donnees_entrainement #Est ce que c'est ça qu'on veut vraiment?
         self.regles = self.generer_regles(self.arbre)
         self.stat.calculer_statistiques(self.regles)
 
@@ -108,7 +108,7 @@ class ResultValues():
 
     def justification_prediction(self, patient):
         """ recherche la règle correspondant aux conditions du patients. Retourne la meilleure règle qui décrit ses symptotes. """
-
+        """ Si aucune règle correspond aux conditions du patients, retourne les règles qui ont conduit à sa classification dans l'arbre"""
         for rule in self.regles:
 
             equality = self.determine_equality(patient, rule)
@@ -164,8 +164,8 @@ class ResultValues():
             for suggestion in diagnostic:
                 for conds_suggestion in suggestion:
                     print('Il faut changer {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1]))
+                    #counts the suggestion
                     nb_de_suggestion +=1
-            #counts the suggestion
             self.stat.evaluer_len_diagnostique(nb_de_suggestion)
 
 

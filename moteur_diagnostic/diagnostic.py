@@ -6,15 +6,6 @@ class Diagnostic:
         self.arbre = arbre
         self.good_rules = self.identifie_parametres_bons(regles)
 
-    def identifie_parametres_problematiques(self, rules): #fonction pas utilisé à voir si on garde
-            sick_rule = []
-            for rule in rules:
-                if rule[-1][-1]=='1' :
-                    sick_rule.append([rule])
-
-            for rule in sick_rule:
-                print(rule)
-
     def identifie_parametres_bons(self,regles):
         good_conditions = []
         list_condition =[]
@@ -40,8 +31,6 @@ class Diagnostic:
         #contiendra la liste des conditions à changer
         final_diagnostic_rule = []
 
-
-
         liste_fixe = self.condition_not_in_patient(patient)
         nb_de_condition_a_etudier = len(liste_fixe)
 
@@ -65,20 +54,14 @@ class Diagnostic:
         #d'abors avec une condition, puis deux, puis trois...
         while (not Stop):
 
-            if iteration > nb_de_condition_a_etudier:
+            if liste_courante == []:
             #si cette condition est remplie, cela veut dire que l'ensemble des conditions à tester
             #fut testé, maintenant la liste des futurs possibilité à considérer devient la liste courante
             #et la liste futur devient vide
                 liste_courante = futur_liste
                 futur_liste = []
-                nb_de_cond_a_etudier = len(liste_courante)
-
-
-                iteration = 1
-
-                first_set_of_iteration = False
-
                 liste_fixe = self.condition_not_in_patient(patient)
+                first_set_of_iteration = False
 
             #tout les changements vont être effectuer sur une copie du patient afin de ne pas changer
             #le patient de base
@@ -109,6 +92,7 @@ class Diagnostic:
                 final_diagnostic_rule.append(condition)
                 return final_diagnostic_rule
             else:
+
             #algorithme BFS genère la future liste des conditions à considérer
                 liste_courante.remove(liste_courante[0])
 
@@ -132,7 +116,6 @@ class Diagnostic:
                         futur_liste.append(futur_condition)
                         futur_condition = self.copy_list(condition)
 
-            iteration += 1
 
             if (liste_courante == [] and len(futur_liste[0]) == len(condition)):
             #cette condition est remplis dans le cas ou toutes les possibilités ont été exploré
@@ -158,7 +141,6 @@ class Diagnostic:
             if a_etudier[0] not in patient:
                 list_condition_a_etudier.append(a_etudier[0])
         return list_condition_a_etudier
-
 
 
     #fonction qui sert pour ordonner une liste

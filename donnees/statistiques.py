@@ -29,11 +29,12 @@ class StatistiquesID3:
 
 
 
-    def evaluer_len_diagnostique(self, nb_de_correct):
+    def evaluer_len_diagnostique(self, nb_de_suggestion):
         """ evalue si le diagnostique a 2 ou moins changements de parametres en ajoutant le cas écheant à l'attribut qui comptabilise le bon nombre """
-        if nb_de_correct == 2:
+
+        if nb_de_suggestion == 2:
             self.nb_changement_2 += 1
-        if nb_de_correct == 1:
+        if nb_de_suggestion == 1:
             self.nb_changement_1 +=1
 
 
