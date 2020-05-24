@@ -24,16 +24,11 @@ class ResultValues():
         #Statistics pour task 1
         self.stat = StatistiquesID3()
 
-        #Task 2
-         #evaluate the tree created in part 1:
-        self.evaluation_model_1 = self.evaluer_classification( self.donnees_test, self.arbre)
-
-
 
         # Task 3
+
         self.faits_initiaux = donnees_entrainement
         self.regles = self.generer_regles(self.arbre)
-
         self.stat.calculer_statistiques(self.regles)
 
 
@@ -42,11 +37,9 @@ class ResultValues():
         self.diagnostic = Diagnostic(self.regles,self.arbre)
 
         # Task 5
+
         id3_adv = ID3_ADV()
-
         self.arbre_advance = id3_adv.construit_arbre(self.donnees_entrainement_adv)
-
-        self.evaluation_model_2 = self.evaluer_classification( self.donnees_test_adv, self.arbre_advance)
 
     def get_results(self):
         return [self.arbre, self.faits_initiaux, self.regles, self.arbre_advance]
@@ -96,7 +89,7 @@ class ResultValues():
         """ determine si une regle correspond aux conditions du patient en comptabilisant le nombre de conditions vraies de la règle pour le patient"""
         sorted_rules = []
         rule = regle.copy()
-        #we sort the rule to make it easier to classify
+        #we sort the rule to make it easier to compare the list
         result = rule.pop()
         sorted_rule= sorted(rule, key=lambda r: r[0])
         sorted_rule.append(result)
@@ -105,32 +98,29 @@ class ResultValues():
         #we sort the example alphabetically as well
         sorted_patient= sorted(patient.items())
 
-        total = 0
+        equality = 0
         for cond_rule in sorted_rule:
             for cond_patient in sorted_patient:
                 if cond_rule==cond_patient:
-                    total += 1
+                    equality += 1
 
-        if total == (len(sorted_rule)-1):
-            return True
-        else:
-            return False
+        return equality
 
     def justification_prediction(self, patient):
         """ recherche la règle correspondant aux conditions du patients. Retourne la meilleure règle qui décrit ses symptotes. """
-        best_rule = []
+
         for rule in self.regles:
+
             equality = self.determine_equality(patient, rule)
 
-            if equality:
-                return rule
+            if equality==(len(rule)-1):
+                return rule,True
 
+        justification = self.arbre.classifie(patient)
+        justification.replace('Alors','')
+        justification = justification[:-3]
 
-        #return never used
-        #TO DO : FIND BETTER ALTERNATIVE THAN RETURNING FIRST RULE
-        #we try to find the second best rule
-        print('no suitable rule found')
-        return self.regles[0]
+        return justification,False
 
     def rprs_justification(self, patient):
         """ représente les informations d'un patient et son diagnostique. """
@@ -138,23 +128,27 @@ class ResultValues():
         etat_patient = patient[0]
         caract_patient = patient[1]
 
-        justification = self.justification_prediction(caract_patient)
+        justification,justification_trouvé = self.justification_prediction(caract_patient)
         print('---')
         print('Patient avec :')
         for key,value in caract_patient.items():
                 print('{} = {},'.format(key,value))
 
         print('est {}.'.format(etat_patient[0]))
-
-        print('est classifié comme {}'.format(justification[-1][-1]))
+        print('est classifié comme {}'.format(self.arbre.classifie(caract_patient)[-1]))
         print('car :')
-        for condition in justification:
-            print('{} = {},'.format(condition[0],condition[1]), end=' ')
-        print('')
-        print('***')
-        print('suggestion de diagnostic:')
+        if justification_trouvé:
+            for condition in justification:
+                print('{} = {},'.format(condition[0],condition[1]), end=' ')
+            print('')
+        else:
+            print("Pas de règle correspondante, le patient a été classifié dans la classe prédominante qui suit la(les) règle(s) suivantes:")
+            print(justification)
+
+        print('-'*20)
+        print('Suggestion de diagnostic:')
         self.rprs_diagnostic(caract_patient)
-        print('***')
+        print('-'*20)
 
 
     def rprs_diagnostic(self,patient):
@@ -164,24 +158,14 @@ class ResultValues():
 
         if diagnostic == None:
 
-            return 'patient en bonne santé, continuez comme ça !'
+            print('Pas de diagnostic à faire, le patient est classifié comme étant en bonne santé!')
         else:
-            print("Diagnostic",diagnostic)
-            print('Ensemble des changement à faire pour que le patient soit guéri:')
             nb_de_suggestion = 0
             for suggestion in diagnostic:
                 for conds_suggestion in suggestion:
                     print('Il faut changer {} à {} '.format(conds_suggestion[0] ,conds_suggestion[1]))
                     nb_de_suggestion +=1
             #counts the suggestion
-            self.stat.evaluer_diagnostique(nb_de_suggestion)
-
-    def get_patients_sauves(self):
-        """ retourne le nombre de patients nécéssitant 2 ou moins changements de paramètre pour etre en bonne santé"""
-        return self.stat.trouver_nombre_patients_ok()
+            self.stat.evaluer_len_diagnostique(nb_de_suggestion)
 
 
-    def get_statistiques(self):
-        """ fonction qui retourne tous les statistiques nécessaires """
-        print('nb malades:')
-        print(self.stat.get_nombre_malades(self.donnees_test))

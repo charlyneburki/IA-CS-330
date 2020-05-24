@@ -134,12 +134,12 @@ class Diagnostic:
 
             iteration += 1
 
-            if (liste_courante == [] and len(futur_liste[0]) == Maximum_de_condition_a_etudier and len(condition) == Maximum_de_condition_a_etudier):
+            if (liste_courante == [] and len(futur_liste[0]) == len(condition)):
             #cette condition est remplis dans le cas ou toutes les possibilités ont été exploré
                 Stop = True
 
 
-        print("Pas de combinaison possible pour le diagnostique trouvé en 100'000 combinaison")
+        print("Pas de combinaison trouvé pour le diagnostique")
         return []
 
 
