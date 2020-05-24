@@ -154,22 +154,11 @@ class ID3_ADV:
                         patient[1]['etiquette'] = True
 
                 entropie = self.h_C_A(donnees)
-                if(attribut == 'trestbps' and (valeur == '150' or valeur == '120')):
-                    #print(attributs)
-                    print("ici c'est la valeur de trestbps",valeur)
-                    print("entropie min",entropie_min)
-                    print("entropie",entropie)
-                    if(entropie == 0.7430188107576459):
-                        print("prout \n \n")
-
 
                 if entropie < entropie_min  :
-                    #print("entropie",entropie_min)
-                    #print("donnes considérée",donnees)
                     entropie_min= entropie
                     split = (attribut,valeur)
 
-        print("split choisis",split)
         return split
 
     def p_aj(self, donnees, attribut, valeur):
