@@ -20,14 +20,3 @@ class TraitementDonnees:
                     sample.append(donnee)
                     final_donnees.append(sample)
         return final_donnees
-    
-    def import_donnees_test(self, filepath):
-        "importe les données test à partir du filepath"
-        from csv import DictReader
-        # open file in read mode
-        with open(filepath, 'r', encoding='UTF-8-sig') as read_obj:
-            # pass the file object to DictReader() to get the DictReader object
-            dict_reader = DictReader(read_obj)
-            # get a list of dictionaries from dct_reader
-            donnees = list(dict_reader)
-        return donnees
