@@ -24,7 +24,7 @@ class Diagnostic:
 
         for g_condition in good_conditions:
             nb_occurence = good_conditions.count(g_condition)
-            if ((g_condition,nb_occurence) not in list_condition_condition) and not(g_condition[0]== 'sex' or g_condition[0]== 'age'):
+            if ((g_condition,nb_occurence) not in list_condition_finale) and not(g_condition[0]== 'sex' or g_condition[0]== 'age'):
                 list_condition_finale.append((g_condition,nb_occurence))
 
         self.list_condition_finale = list_condition_finale.sort(key=self.takeSecond,reverse = True)
@@ -108,7 +108,8 @@ class Diagnostic:
                 #d'attribut en commun avec l'ensemble considéré cette itération
                 #par exemple : si ('cp' = '0') est considéré cette itération
                 #on va le fusionner avec une condition qui ne possède pas l'attribut 'cp'
-                #-->[('cp' = '0')('ca' = 1)]
+                #-->[('cp' = '0')('ca' = 1)] et non [('cp' = '0')('cp' = '2')]
+
                 for cond in liste_fixe :
                     ensemble_parametre = []
                     for ensemble_param in condition:
@@ -124,6 +125,7 @@ class Diagnostic:
 
             if (liste_courante == [] and len(futur_liste[0]) == len(condition)):
             #cette condition est remplis dans le cas ou toutes les possibilités ont été exploré
+
                 Stop = True
 
 

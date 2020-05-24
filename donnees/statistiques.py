@@ -34,6 +34,7 @@ class StatistiquesID3:
 
         if nb_de_suggestion == 2:
             self.nb_changement_2 += 1
+
         if nb_de_suggestion == 1:
             self.nb_changement_1 +=1
 
