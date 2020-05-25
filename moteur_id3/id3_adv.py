@@ -87,10 +87,12 @@ class ID3_ADV:
             return NoeudDeDecision_ADV(None, donnees, str(predominant_class))
 
         else:
+
             for attribut in attributs:
-                if attribut == 'etiquette':
-                    continue
-                attributs[attribut] = sorted(attributs[attribut],key=float)
+                if attribut != 'etiquette':
+                    #ordonne les données pour assurer la stabilité de l'arbre produit
+                    attributs[attribut] = sorted(attributs[attribut],key=float,reverse=False)
+
             # Sélectionne l'attribut qui réduit au maximum l'entropie.
             (attribut_separatoire, valeur_separatoire) = self.trouver_separation(donnees,attributs)
 
@@ -145,7 +147,6 @@ class ID3_ADV:
         for attribut in attributs:
             if attribut == 'etiquette':
                     continue
-            #attributs[attribut] = sorted(attributs[attribut],key=float)
             for valeur in attributs[attribut]:
                 for patient in donnees:
                     if float(patient[1][attribut]) < float(valeur) :
