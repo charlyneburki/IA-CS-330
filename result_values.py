@@ -14,7 +14,7 @@ class ResultValues():
     def __init__(self):
 
         # load data
-        donnees_entrainement, self.donnees_test, self.donnees_entrainement_adv, self.donnees_test_adv = self.importer_donnees()
+        donnees_entrainement, self.donnees_test, donnees_entrainement_adv, self.donnees_test_adv = self.importer_donnees()
 
         id3 = ID3()
 
@@ -39,7 +39,7 @@ class ResultValues():
         # Task 5
 
         id3_adv = ID3_ADV()
-        self.arbre_advance = id3_adv.construit_arbre(self.donnees_entrainement_adv)
+        self.arbre_advance = id3_adv.construit_arbre(donnees_entrainement_adv)
 
     def get_results(self):
         return [self.arbre, self.faits_initiaux, self.regles, self.arbre_advance]
@@ -173,5 +173,3 @@ class ResultValues():
                     #counts the suggestion
                     nb_de_suggestion +=1
             self.stat.evaluer_len_diagnostique(nb_de_suggestion)
-
-
