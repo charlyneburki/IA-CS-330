@@ -87,6 +87,10 @@ class ID3_ADV:
             return NoeudDeDecision_ADV(None, donnees, str(predominant_class))
 
         else:
+            for attribut in attributs:
+                if attribut == 'etiquette':
+                    continue
+                attributs[attribut] = sorted(attributs[attribut],key=float)
             # Sélectionne l'attribut qui réduit au maximum l'entropie.
             (attribut_separatoire, valeur_separatoire) = self.trouver_separation(donnees,attributs)
 
@@ -136,11 +140,12 @@ class ID3_ADV:
     def trouver_separation(self, donnees, attributs):
         "recherche la separation des attribut la plus optimale en utilisant un calcul de l'entropie avec les donnees et les attributs passés en paramètre. :return: un tuple représentant la valeur de separation optimale avec l'attribut"
 
-        entropie_min = 1.0
+        entropie_min = 2.0
 
         for attribut in attributs:
             if attribut == 'etiquette':
                     continue
+            #attributs[attribut] = sorted(attributs[attribut],key=float)
             for valeur in attributs[attribut]:
                 for patient in donnees:
                     if float(patient[1][attribut]) < float(valeur) :
@@ -150,7 +155,7 @@ class ID3_ADV:
 
                 entropie = self.h_C_A(donnees)
 
-                if entropie <= entropie_min:
+                if entropie < entropie_min  :
                     entropie_min= entropie
                     split = (attribut,valeur)
 
